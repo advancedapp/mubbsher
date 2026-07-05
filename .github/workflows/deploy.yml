@@ -3,7 +3,7 @@ name: Build and Deploy Odoo 18
 on:
   push:
     branches:
-      - master
+      - main
 
 env:
   REGISTRY_IMAGE: ${{ vars.REGISTRY_IMAGE }}
