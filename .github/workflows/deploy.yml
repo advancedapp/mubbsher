@@ -1,0 +1,56 @@
+name: Build and Deploy Odoo 18
+
+on:
+  push:
+    branches:
+      - master
+
+env:
+  REGISTRY_IMAGE: ${{ vars.REGISTRY_IMAGE }}
+
+jobs:
+  build-image:
+    runs-on: [self-hosted, odoo18-runner]
+    permissions:
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Compute image tag
+        id: vars
+        run: |
+          SHORT_SHA=$(echo "${GITHUB_SHA}" | cut -c1-8)
+          echo "image_tag=${GITHUB_REF_NAME}-${SHORT_SHA}" >> "$GITHUB_OUTPUT"
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push
+        run: |
+          docker build --pull --no-cache -t "${REGISTRY_IMAGE}:${{ steps.vars.outputs.image_tag }}" .
+          docker push "${REGISTRY_IMAGE}:${{ steps.vars.outputs.image_tag }}"
+          docker tag "${REGISTRY_IMAGE}:${{ steps.vars.outputs.image_tag }}" "${REGISTRY_IMAGE}:latest"
+          docker push "${REGISTRY_IMAGE}:latest"
+
+  deploy:
+    needs: build-image
+    runs-on: [self-hosted, odoo18-runner]
+    environment:
+      name: production
+    steps:
+      - name: Deploy
+        env:
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          IMAGE_TAG: latest
+        run: |
+          set -euo pipefail
+          cd /opt/odoo-deploy
+          echo "POSTGRES_PASSWORD=${POSTGRES_PASSWORD}" > .env
+          echo "REGISTRY_IMAGE=${REGISTRY_IMAGE}" >> .env
+          echo "IMAGE_TAG=${IMAGE_TAG}" >> .env
+          docker compose pull odoo
+          docker compose up -d --force-recreate --no-deps odoo
