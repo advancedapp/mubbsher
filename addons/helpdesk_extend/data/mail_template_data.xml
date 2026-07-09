@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <record id="mail_template_ticket_closed" model="mail.template">
+        <field name="name">Helpdesk: Ticket Closed</field>
+        <field name="model_id" ref="helpdesk_mgmt.model_helpdesk_ticket"/>
+        <field name="subject">Your ticket {{ object.name }} has been closed</field>
+        <field name="partner_to">{{ object.partner_id.id }}</field>
+        <field name="body_html" type="html">
+            <div>
+                <p>Dear {{ object.partner_id.name }},</p>
+                <p>Your ticket <strong>{{ object.name }}</strong> has been closed by our support team.</p>
+                <p>If the issue is not resolved, you can reopen the ticket from your portal.</p>
+            </div>
+        </field>
+        <field name="auto_delete" eval="False"/>
+    </record>
+</odoo>

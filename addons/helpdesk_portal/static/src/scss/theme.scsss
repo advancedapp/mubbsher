@@ -1,0 +1,124 @@
+
+@font-face {
+    font-family: 'Lama Sans';
+    src: url('/helpdesk_portal/static/src/fonts/ArbFONTS-LamaSans-Medium.ttf') format('truetype');
+    font-weight: 500;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Lama Sans';
+    src: url('/helpdesk_portal/static/src/fonts/LamaSans-Black.ttf') format('truetype');
+    font-weight: 900;
+    font-style: normal;
+}
+
+.mubbsher-portal-theme {
+    --mubbsher-primary: #306c6c;   // teal, from logo
+    --mubbsher-secondary: #b7c634; // lime green, from logo
+
+    font-family: 'Lama Sans', sans-serif;
+
+    .navbar,
+    .o_portal_navbar {
+        background-color: var(--mubbsher-primary);
+    }
+
+    a,
+    .btn-link {
+        color: var(--mubbsher-primary);
+    }
+
+    .btn-primary {
+        background-color: var(--mubbsher-primary);
+        border-color: var(--mubbsher-primary);
+
+        &:hover {
+            background-color: darken(#306c6c, 8%);
+            border-color: darken(#306c6c, 8%);
+        }
+    }
+
+    .btn-warning {
+        background-color: var(--mubbsher-secondary);
+        border-color: var(--mubbsher-secondary);
+        color: #1a1a1a;
+
+        &:hover {
+            background-color: darken(#b7c634, 8%);
+            border-color: darken(#b7c634, 8%);
+        }
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        font-weight: 900; // Lama Sans Black for headings
+        color: var(--mubbsher-primary);
+    }
+
+    .mubbsher-logo {
+        max-height: 48px;
+        width: auto;
+    }
+    .form-control,
+    select.form-control,
+    textarea.form-control {
+        font-family: 'Lama Sans', sans-serif;
+        border: 1px solid #d0d0d0;
+        border-radius: 6px;
+        padding: 0.6rem 0.9rem;
+        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+
+        &:focus {
+            border-color: var(--mubbsher-primary);
+            box-shadow: 0 0 0 0.2rem rgba(48, 108, 108, 0.15);
+        }
+
+        &::placeholder {
+            color: #9a9a9a;
+        }
+    }
+
+    .form-group label,
+    label {
+        font-weight: 500; // Lama Sans Medium
+        color: #333;
+        margin-bottom: 0.4rem;
+    }
+
+    // Required field marker
+    label.o_form_label_required::after,
+    .form-group label[for] + .required::before {
+        content: " *";
+        color: var(--mubbsher-secondary);
+    }
+
+    // Select dropdown arrow tint on focus
+    select.form-control:focus {
+        outline: none;
+    }
+
+    // File input (attachments)
+    input[type="file"].form-control {
+        padding: 0.4rem 0.6rem;
+    }
+
+    // Submit button on the ticket form
+    #ticket_submit_btn,
+    button[type="submit"].btn-primary {
+        background-color: var(--mubbsher-primary);
+        border-color: var(--mubbsher-primary);
+        font-weight: 500;
+        padding: 0.6rem 1.8rem;
+        border-radius: 6px;
+
+        &:hover {
+            background-color: darken(#306c6c, 8%);
+        }
+    }
+
+    // Reopen modal textarea (reopen_reason)
+    #reopen_modal textarea {
+        min-height: 100px;
+    }
+
+}

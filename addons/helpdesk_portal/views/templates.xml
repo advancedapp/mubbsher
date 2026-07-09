@@ -1,0 +1,9 @@
+<odoo>
+<template id="portal_content_inherit"
+          inherit_id="portal.portal_layout"
+          name="Helpdesk Portal Content">
+    <xpath expr="//div[hasclass('o_portal_wrap')]" position="attributes">
+        <attribute name="class" add="helpdesk-portal" separator=" "/>
+    </xpath>
+</template>
+</odoo>

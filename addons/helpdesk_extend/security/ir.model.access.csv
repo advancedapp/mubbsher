@@ -1,0 +1,7 @@
+id,name,model_id/id,group_id/id,perm_read,perm_write,perm_create,perm_unlink
+access_helpdesk_service_type_user,helpdesk.service.type.user,model_helpdesk_service_type,base.group_user,1,0,0,0
+access_helpdesk_service_type_portal,helpdesk.service.type.portal,model_helpdesk_service_type,base.group_portal,1,0,0,0
+access_helpdesk_service_type_manager,helpdesk.service.type.manager,model_helpdesk_service_type,helpdesk_mgmt.group_helpdesk_manager,1,1,1,1
+access_helpdesk_request_type_user,helpdesk.request.type.user,model_helpdesk_request_type,base.group_user,1,0,0,0
+access_helpdesk_request_type_portal,helpdesk.request.type.portal,model_helpdesk_request_type,base.group_portal,1,0,0,0
+access_helpdesk_request_type_manager,helpdesk.request.type.manager,model_helpdesk_request_type,helpdesk_mgmt.group_helpdesk_manager,1,1,1,1

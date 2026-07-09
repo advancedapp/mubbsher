@@ -1,0 +1,32 @@
+<odoo>
+    <template id="ticket_submit_form_extend"
+              inherit_id="helpdesk_mgmt.portal_create_ticket"
+              name="Helpdesk Ticket Form Extension">
+        <xpath expr="//textarea[@name='description']/parent::div" position="before">
+            <div class="form-group">
+                <label for="service_type_id">Service Type</label>
+                <select name="service_type_id" class="form-control" required="required">
+                    <t t-foreach="service_types" t-as="st">
+                        <option t-att-value="st.id" t-esc="st.name"/>
+                    </t>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="request_type">Request Type</label>
+                <select name="request_type" class="form-control" required="required">
+                    <option value="inquiry">Inquiry</option>
+                    <option value="complaint">Complaint</option>
+                    <option value="request">Request</option>
+                </select>
+            </div>
+            <div class="form-group" id="request_subtype_wrapper" style="display:none;">
+                <label for="request_subtype_id">Request</label>
+                <select name="request_subtype_id" class="form-control">
+                    <t t-foreach="request_types" t-as="rt">
+                        <option t-att-value="rt.id" t-esc="rt.name"/>
+                    </t>
+                </select>
+            </div>
+        </xpath>
+    </template>
+</odoo>
