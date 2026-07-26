@@ -11,6 +11,7 @@
     "author": "Domatix, Onestein, Odoo Community Association (OCA)",
     "depends": ["sale_management", "account"],
     "data": [
+        "security/subscription_rule.xml",
         "views/product_template_views.xml",
         "views/account_move_views.xml",
         "views/sale_subscription_views.xml",
