@@ -2,70 +2,70 @@
 <odoo>
     <data noupdate="1">
         <record id="seq_id" model="ir.sequence">
-            <field name="name">sale_subscription_sequencer</field>
+            <field name="name">مرتب اشتراك المبيعات</field>
             <field name="code">sale.subscription</field>
             <field name="prefix">SUB</field>
             <field name="padding">5</field>
         </record>
 
         <record id="subscription_stage_draft" model="sale.subscription.stage">
-            <field name="name">Draft</field>
+            <field name="name">مسودة</field>
             <field name="sequence">0</field>
             <field name="type">draft</field>
             <field name="description">
-                Draft, still working on the specifics.
+                مسودة، لا يزال العمل جارياً على التفاصيل.
             </field>
             <field eval="False" name="fold" />
         </record>
 
         <record id="subscription_stage_ready" model="sale.subscription.stage">
-            <field name="name">Ready to start</field>
+            <field name="name">جاهز للبدء</field>
             <field name="sequence">1</field>
             <field name="type">pre</field>
             <field name="description">
-                A subscription is ready to start when is not marked as in progress but it can be at any moment. If there's no 'Closed'-type stage defined, when a subscription comes to an end by automatic means, it will be marked with this stage.
+                الاشتراك جاهز للبدء عندما لا يكون محدداً كقيد التنفيذ ولكن يمكن أن يبدأ في أي لحظة. إذا لم يتم تعريف مرحلة من نوع 'مغلق'، عند انتهاء الاشتراك تلقائياً، سيتم تحديده بهذه المرحلة.
             </field>
             <field eval="False" name="fold" />
         </record>
 
         <record id="subscription_stage_in_progress" model="sale.subscription.stage">
-            <field name="name">In progress</field>
+            <field name="name">قيد التنفيذ</field>
             <field name="sequence">2</field>
             <field name="type">in_progress</field>
             <field eval="False" name="fold" />
             <field name="description">
-                As an 'In progress'-type of stage, it will trigger the recurring invoicing process if applicable. If this stage is the first - sequence order - of the available 'In progress' types and there's a stage change from any other non-'In progress' types to this one, an invoice will be created automatically if the start date is the present day.
+                كمرحلة من نوع 'قيد التنفيذ'، سيتم تشغيل عملية الفوترة المتكررة إذا كانت قابلة للتطبيق. إذا كانت هذه المرحلة هي الأولى - حسب ترتيب التسلسل - من أنواع 'قيد التنفيذ' المتاحة وكان هناك تغيير في المرحلة من أي نوع آخر غير 'قيد التنفيذ' إلى هذا النوع، سيتم إنشاء فاتورة تلقائياً إذا كان تاريخ البدء هو اليوم الحالي.
             </field>
         </record>
 
         <record id="subscription_stage_closed" model="sale.subscription.stage">
-            <field name="name">Closed</field>
+            <field name="name">مغلق</field>
             <field name="sequence">3</field>
             <field name="type">post</field>
             <field eval="False" name="fold" />
             <field name="description">
-                The final stage of a subscription. There are two ways to mark a subscription as closed. The easiest one is using the kanban card-moving capabilities, pressing the 'Close subscription' button (only available if a subscription is in progress).
+                المرحلة النهائية للاشتراك. هناك طريقتان لتحديد الاشتراك كمغلق. الطريقة الأسهل هي استخدام إمكانيات نقل بطاقات كانبان، بالضغط على زر 'إغلاق الاشتراك' (متاح فقط إذا كان الاشتراك قيد التنفيذ).
             </field>
         </record>
     </data>
 
     <record id="close_reason_expensive" model="sale.subscription.close.reason">
-        <field name="name">The subscription is too expensive</field>
+        <field name="name">الاشتراك مكلف جداً</field>
     </record>
 
     <record id="close_reason_requirement" model="sale.subscription.close.reason">
-        <field name="name">Subscription does not meet my requirements</field>
+        <field name="name">الاشتراك لا يلبي متطلباتي</field>
     </record>
 
     <record id="close_reason_ended" model="sale.subscription.close.reason">
-        <field name="name">The subscription ended</field>
+        <field name="name">انتهى الاشتراك</field>
     </record>
 
     <record id="close_reason_use" model="sale.subscription.close.reason">
-        <field name="name">I don't really use it</field>
+        <field name="name">لا أستخدمه حقاً</field>
     </record>
 
     <record id="close_reason_other" model="sale.subscription.close.reason">
-        <field name="name">Other</field>
+        <field name="name">أخرى</field>
     </record>
 </odoo>

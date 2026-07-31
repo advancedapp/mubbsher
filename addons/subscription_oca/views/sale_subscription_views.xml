@@ -4,21 +4,21 @@
         <field name="name">sale.subscription.form</field>
         <field name="model">sale.subscription</field>
         <field name="arch" type="xml">
-            <form string="New subscription">
+            <form string="اشتراك جديد">
                 <header>
                     <button
-                        string="Create Invoice"
+                        string="إنشاء فاتورة"
                         name="manual_invoice"
                         type="object"
                         class="btn-primary"
                     />
 
                     <button
-                        string="Close subscription"
+                        string="إغلاق الاشتراك"
                         class="btn-danger"
                         name="action_close_subscription"
                         type="object"
-                        help="A given subscription can be marked as closed when, for example, renewal is not desired."
+                        help="يمكن تحديد اشتراك كمغلق عندما، على سبيل المثال، لا يكون التجديد مرغوباً."
                         invisible="not in_progress"
                     />
 
@@ -41,7 +41,7 @@
                             <field
                                 name="sale_order_ids_count"
                                 widget="statinfo"
-                                string="Sales"
+                                string="المبيعات"
                             />
                         </button>
                         <button
@@ -54,13 +54,13 @@
                             <field
                                 name="account_invoice_ids_count"
                                 widget="statinfo"
-                                string="Invoices"
+                                string="الفواتير"
                             />
                         </button>
                     </div>
                     <widget
                         name="web_ribbon"
-                        text="Archived"
+                        text="مؤرشف"
                         bg_color="bg-danger"
                         invisible="active"
                     />
@@ -85,6 +85,8 @@
                         </group>
                         <group name="right_group">
                             <field name="template_id" />
+                            <!-- NEW: Salesperson field -->
+                            <field name="salesperson_id" />
                             <field name="crm_team_id" />
                             <field
                                 name="recurring_next_date"
@@ -100,7 +102,7 @@
                     </group>
                     <notebook>
                         <page
-                            string="Subscription lines"
+                            string="بنود الاشتراك"
                             name="subscription_lines_page"
                         >
                             <field name="sale_subscription_line_ids">
@@ -163,13 +165,13 @@
                                 />
                             </group>
                         </page>
-                        <page string="Misc" name="misc_page">
+                        <page string="متفرقات" name="misc_page">
                             <group>
                                 <field name="description" />
                                 <field name="terms" />
                             </group>
                         </page>
-                        <page string="Other info" name="other_info_page">
+                        <page string="معلومات أخرى" name="other_info_page">
                             <group>
                                 <group>
                                     <field name="code" />
@@ -205,9 +207,9 @@
                 <field name="recurring_next_date" optional="show" />
                 <field name="code" optional="show" />
                 <field name="user_id" optional="show" />
-                <field name="recurring_total" sum="Total subtotal" optional="show" />
-                <field name="amount_tax" sum="Total Tax" optional="show" />
-                <field name="amount_total" sum="Total" optional="show" />
+                <field name="recurring_total" sum="المجموع الفرعي الإجمالي" optional="show" />
+                <field name="amount_tax" sum="إجمالي الضرائب" optional="show" />
+                <field name="amount_total" sum="الإجمالي" optional="show" />
                 <field name="template_id" optional="show" />
                 <field name="stage_id" optional="show" />
             </list>
@@ -430,7 +432,7 @@
     <menuitem
         id="sale_subscription_root"
         groups="sales_team.group_sale_salesman_all_leads"
-        name="Subscriptions"
+        name="الاشتراكات"
         web_icon="subscription_oca,static/img/icon.png"
         sequence="7"
     />
@@ -439,13 +441,13 @@
         id="sale_subscription_configuration_menu"
         parent="sale_subscription_root"
         sequence="20"
-        name="Configuration"
+        name="الإعدادات"
     />
 
     <menuitem
         id="subscription_menu"
         parent="sale_subscription_root"
-        name="Subscriptions"
+        name="الاشتراكات"
         sequence="1"
     />
 
@@ -461,6 +463,7 @@
         parent="subscription_menu"
         action="subscription_product_template_action"
         sequence="3"
+        name="المنتجات"
     />
 
     <menuitem
@@ -468,6 +471,6 @@
         parent="sale_subscription_configuration_menu"
         action="subscription_close_reason_action"
         sequence="30"
-        name="Close reasons"
+        name="أسباب الإغلاق"
     />
 </odoo>

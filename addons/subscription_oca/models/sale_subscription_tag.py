@@ -5,6 +5,6 @@ from odoo import fields, models
 
 class SaleSubscriptionTag(models.Model):
     _name = "sale.subscription.tag"
-    _description = "Tags for sale subscription"
+    _description = "علامات اشتراك المبيعات"
 
-    name = fields.Char("Tag name", required=True)
+    name = fields.Char("اسم العلامة", required=True, translate=True)

@@ -5,6 +5,6 @@ from odoo import fields, models
 
 class SaleSubscriptionCloseReason(models.Model):
     _name = "sale.subscription.close.reason"
-    _description = "Close reason model"
+    _description = "نموذج سبب الإغلاق"
 
-    name = fields.Char(required=True)
+    name = fields.Char(required=True, translate=True, string="الاسم")

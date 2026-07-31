@@ -6,7 +6,7 @@ from odoo import fields, models
 class Product(models.Model):
     _inherit = "product.template"
 
-    subscribable = fields.Boolean(string="Subscribable product")
+    subscribable = fields.Boolean(string="منتج قابل للاشتراك")
     subscription_template_id = fields.Many2one(
-        comodel_name="sale.subscription.template", string="Subscription template"
+        comodel_name="sale.subscription.template", string="قالب الاشتراك"
     )

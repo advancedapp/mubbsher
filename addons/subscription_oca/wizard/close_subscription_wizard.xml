@@ -4,7 +4,7 @@
         <field name="name">close.reason.wizard.view</field>
         <field name="model">close.reason.wizard</field>
         <field name="arch" type="xml">
-            <form string="Close reason">
+            <form string="سبب الإغلاق">
                 <group>
                     <field name="close_reason_id" />
                 </group>
@@ -13,16 +13,16 @@
                         name="button_confirm"
                         type="object"
                         class="oe_highlight"
-                        string="Confirm"
+                        string="تأكيد"
                     />
-                    <button special="cancel" string="Cancel" class="oe_link" />
+                    <button special="cancel" string="إلغاء" class="oe_link" />
                 </footer>
             </form>
         </field>
     </record>
 
     <record id="close_reason_wizard_act_window" model="ir.actions.act_window">
-        <field name="name">Close reason</field>
+        <field name="name">سبب الإغلاق</field>
         <field name="res_model">close.reason.wizard</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>

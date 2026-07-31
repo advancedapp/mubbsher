@@ -9,11 +9,12 @@ class Partner(models.Model):
     subscription_ids = fields.One2many(
         comodel_name="sale.subscription",
         inverse_name="partner_id",
-        string="Subscriptions",
+        string="الاشتراكات",
     )
     subscription_count = fields.Integer(
         required=False,
         compute="_compute_subscription_count",
+        string="عدد الاشتراكات",
     )
 
     def _compute_subscription_count(self):

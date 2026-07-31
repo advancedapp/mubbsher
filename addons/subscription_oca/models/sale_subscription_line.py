@@ -6,55 +6,60 @@ from odoo.tools.misc import get_lang
 
 class SaleSubscriptionLine(models.Model):
     _name = "sale.subscription.line"
-    _description = "Subscription lines added to a given subscription"
+    _description = "بنود الاشتراك المضافة لاشتراك معين"
     _inherit = "analytic.mixin"
 
     product_id = fields.Many2one(
         comodel_name="product.product",
         domain=[("sale_ok", "=", True)],
-        string="Product",
+        string="المنتج",
     )
     currency_id = fields.Many2one(
         "res.currency",
         related="sale_subscription_id.currency_id",
         store=True,
         readonly=True,
+        string="العملة",
     )
     name = fields.Char(
-        string="Description", compute="_compute_name", store=True, readonly=False
+        string="الوصف",
+        compute="_compute_name",
+        store=True,
+        readonly=False,
+        translate=True,
     )
-    product_uom_qty = fields.Float(default=1.0, string="Quantity")
+    product_uom_qty = fields.Float(default=1.0, string="الكمية")
     price_unit = fields.Float(
-        string="Unit price", compute="_compute_price_unit", store=True, readonly=False
+        string="سعر الوحدة", compute="_compute_price_unit", store=True, readonly=False
     )
     discount = fields.Float(
-        string="Discount (%)", compute="_compute_discount", store=True, readonly=False
+        string="الخصم (%)", compute="_compute_discount", store=True, readonly=False
     )
     tax_ids = fields.Many2many(
         comodel_name="account.tax",
         relation="subscription_line_tax",
         column1="subscription_line_id",
         column2="tax_id",
-        string="Taxes",
+        string="الضرائب",
         compute="_compute_tax_ids",
         store=True,
         readonly=False,
     )
     price_subtotal = fields.Monetary(
-        string="Subtotal", readonly=True, compute="_compute_subtotal", store=True
+        string="المجموع الفرعي", readonly=True, compute="_compute_subtotal", store=True
     )
     price_total = fields.Monetary(
-        string="Total", readonly=True, compute="_compute_subtotal", store=True
+        string="الإجمالي", readonly=True, compute="_compute_subtotal", store=True
     )
     amount_tax_line_amount = fields.Float(
-        string="Taxes Amount", compute="_compute_subtotal", store=True
+        string="مبلغ الضرائب", compute="_compute_subtotal", store=True
     )
     sale_subscription_id = fields.Many2one(
-        comodel_name="sale.subscription", string="Subscription"
+        comodel_name="sale.subscription", string="الاشتراك"
     )
     company_id = fields.Many2one(
         related="sale_subscription_id.company_id",
-        string="Company",
+        string="الشركة",
         store=True,
         index=True,
     )

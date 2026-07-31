@@ -14,95 +14,106 @@ logger = logging.getLogger(__name__)
 
 class SaleSubscription(models.Model):
     _name = "sale.subscription"
-    _description = "Subscription"
+    _description = "الاشتراك"
     _inherit = ["mail.thread", "mail.activity.mixin"]
     _order = "id desc"
 
-    color = fields.Integer("Color Index")
+    color = fields.Integer("مؤشر اللون")
     name = fields.Char(
         compute="_compute_name",
         store=True,
+        translate=True,
+        string="الاسم",
     )
-    sequence = fields.Integer()
+    sequence = fields.Integer("التسلسل")
     company_id = fields.Many2one(
         "res.company",
-        "Company",
+        "الشركة",
         required=True,
         index=True,
         default=lambda self: self.env.company,
     )
     partner_id = fields.Many2one(
-        comodel_name="res.partner", required=True, string="Partner", index=True
+        comodel_name="res.partner", required=True, string="الشريك", index=True
     )
     fiscal_position_id = fields.Many2one(
         "account.fiscal.position",
-        string="Fiscal Position",
+        string="المركز الضريبي",
         domain="[('company_id', '=', company_id)]",
         check_company=True,
     )
-    active = fields.Boolean(default=True)
+    active = fields.Boolean(default=True, string="نشط")
     template_id = fields.Many2one(
         comodel_name="sale.subscription.template",
         required=True,
-        string="Subscription template",
+        string="قالب الاشتراك",
     )
     code = fields.Char(
-        string="Reference",
+        string="المرجع",
         default=lambda self: self.env["ir.sequence"].next_by_code("sale.subscription"),
     )
-    in_progress = fields.Boolean(string="In progress", default=False)
+    in_progress = fields.Boolean(string="قيد التنفيذ", default=False)
     recurring_rule_boundary = fields.Boolean(
-        string="Boundary", compute="_compute_rule_boundary", store=True
+        string="الحدود", compute="_compute_rule_boundary", store=True
     )
     pricelist_id = fields.Many2one(
-        comodel_name="product.pricelist", required=True, string="Pricelist"
+        comodel_name="product.pricelist", required=True, string="قائمة الأسعار"
     )
-    recurring_next_date = fields.Date(string="Next invoice date", default=date.today())
+    recurring_next_date = fields.Date(string="تاريخ الفاتورة التالية", default=date.today())
     user_id = fields.Many2one(
         comodel_name="res.users",
-        string="Commercial agent",
+        string="الوكيل التجاري",
         default=lambda self: self.env.user.id,
     )
-    date_start = fields.Date(string="Start date", default=date.today())
+    # NEW FIELD: المندوب (Salesperson)
+    salesperson_id = fields.Many2one(
+        comodel_name="res.users",
+        string="المندوب",
+        default=lambda self: self.env.user.id,
+        tracking=True,
+    )
+    date_start = fields.Date(string="تاريخ البدء", default=date.today())
     date = fields.Date(
-        string="Finish date",
+        string="تاريخ الانتهاء",
         compute="_compute_rule_boundary",
         store=True,
         readonly=False,
     )
-    description = fields.Text()
+    description = fields.Text(string="الوصف", translate=True)
     sale_order_id = fields.Many2one(
-        comodel_name="sale.order", string="Origin sale order"
+        comodel_name="sale.order", string="أمر البيع الأصلي"
     )
     terms = fields.Text(
-        string="Terms and conditions",
+        string="الشروط والأحكام",
         compute="_compute_terms",
         store=True,
         readonly=False,
+        translate=True,
     )
     invoice_ids = fields.One2many(
         comodel_name="account.move",
         inverse_name="subscription_id",
-        string="Invoices",
+        string="الفواتير",
     )
     sale_order_ids = fields.One2many(
         comodel_name="sale.order",
         inverse_name="order_subscription_id",
-        string="Orders",
+        string="الطلبات",
     )
     recurring_total = fields.Monetary(
-        compute="_compute_total", string="Recurring price", store=True
+        compute="_compute_total", string="السعر المتكرر", store=True
     )
-    amount_tax = fields.Monetary(compute="_compute_total", store=True)
-    amount_total = fields.Monetary(compute="_compute_total", store=True)
-    tag_ids = fields.Many2many(comodel_name="sale.subscription.tag", string="Tags")
-    image = fields.Binary("Image", related="user_id.image_512", store=True)
-    journal_id = fields.Many2one(comodel_name="account.journal", string="Journal")
+    amount_tax = fields.Monetary(compute="_compute_total", string="مبلغ الضرائب", store=True)
+    amount_total = fields.Monetary(compute="_compute_total", string="الإجمالي", store=True)
+    tag_ids = fields.Many2many(comodel_name="sale.subscription.tag", string="العلامات")
+    image = fields.Binary("الصورة", related="user_id.image_512", store=True)
+    journal_id = fields.Many2one(comodel_name="account.journal", string="السجل")
     currency_id = fields.Many2one(
         related="pricelist_id.currency_id",
         depends=["pricelist_id"],
         store=True,
         ondelete="restrict",
+        string="العملة",
     )
 
     @api.model
@@ -112,7 +123,7 @@ class SaleSubscription(models.Model):
 
     stage_id = fields.Many2one(
         comodel_name="sale.subscription.stage",
-        string="Stage",
+        string="المرحلة",
         tracking=True,
         group_expand="_read_group_stage_ids",
         store=True,
@@ -123,18 +134,19 @@ class SaleSubscription(models.Model):
     sale_subscription_line_ids = fields.One2many(
         comodel_name="sale.subscription.line",
         inverse_name="sale_subscription_id",
+        string="بنود الاشتراك",
     )
     sale_order_ids_count = fields.Integer(
-        compute="_compute_sale_order_ids_count", string="Sale orders"
+        compute="_compute_sale_order_ids_count", string="أوامر البيع"
     )
     account_invoice_ids_count = fields.Integer(
-        compute="_compute_account_invoice_ids_count", string="Invoice Count"
+        compute="_compute_account_invoice_ids_count", string="عدد الفواتير"
     )
     close_reason_id = fields.Many2one(
-        comodel_name="sale.subscription.close.reason", string="Close Reason"
+        comodel_name="sale.subscription.close.reason", string="سبب الإغلاق"
     )
-    crm_team_id = fields.Many2one(comodel_name="crm.team", string="Sale team")
-    to_renew = fields.Boolean(default=False, string="To renew")
+    crm_team_id = fields.Many2one(comodel_name="crm.team", string="فريق المبيعات")
+    to_renew = fields.Boolean(default=False, string="للتجديد")
 
     @api.model
     def cron_subscription_management(self):
@@ -143,20 +155,20 @@ class SaleSubscription(models.Model):
             subscription = subscription.with_company(subscription.company_id)
             if subscription.in_progress:
                 if (
-                    subscription.recurring_next_date <= today
-                    and subscription.sale_subscription_line_ids
+                        subscription.recurring_next_date <= today
+                        and subscription.sale_subscription_line_ids
                 ):
                     try:
                         subscription.generate_invoice()
                     except Exception:
                         logger.exception("Error on subscription invoice generate")
                 if (
-                    not subscription.recurring_rule_boundary
-                    and subscription.date <= today
+                        not subscription.recurring_rule_boundary
+                        and subscription.date <= today
                 ):
                     subscription.close_subscription()
             elif (
-                subscription.date_start <= today and subscription.stage_id.type == "pre"
+                    subscription.date_start <= today and subscription.stage_id.type == "pre"
             ):
                 subscription.action_start_subscription()
                 subscription.generate_invoice()
@@ -191,11 +203,14 @@ class SaleSubscription(models.Model):
                 record.date = False
                 record.recurring_rule_boundary = True
             else:
-                record.date = (
-                    relativedelta(months=+record.template_id.recurring_rule_count)
-                    + record.date_start
-                )
-                record.recurring_rule_boundary = False
+                if record.date_start:
+                    record.date = (
+                            relativedelta(months=+record.template_id.recurring_rule_count)
+                            + record.date_start
+                    )
+                    record.recurring_rule_boundary = False
+                else:
+                    record.date = False
 
     @api.depends("template_id")
     def _compute_terms(self):
@@ -204,23 +219,22 @@ class SaleSubscription(models.Model):
 
     @api.onchange("template_id", "date_start")
     def _onchange_template_id(self):
-        today = date.today()
-        if self.date_start:
-            today = self.date_start
-        if self.template_id and self.account_invoice_ids_count > 0:
-            self.calculate_recurring_next_date(self.recurring_next_date)
-        else:
-            self.calculate_recurring_next_date(today)
+        if self.date_start and self.template_id:
+            self._calculate_recurring_next_date(self.date_start)
 
-    def calculate_recurring_next_date(self, start_date):
-        if self.account_invoice_ids_count == 0:
-            self.recurring_next_date = date.today()
-        else:
-            type_interval = self.template_id.recurring_rule_type
-            interval = int(self.template_id.recurring_interval)
-            self.recurring_next_date = start_date + relativedelta(
-                **{type_interval: interval}
-            )
+    def _calculate_recurring_next_date(self, start_date):
+        """Calculate the next recurring date based on start date and template"""
+        if self.template_id and start_date:
+            # Ensure start_date is a date object
+            if isinstance(start_date, str):
+                start_date = fields.Date.to_date(start_date)
+            if start_date:
+                type_interval = self.template_id.recurring_rule_type
+                interval = int(self.template_id.recurring_interval)
+                # Add the interval to the start date
+                self.recurring_next_date = start_date + relativedelta(
+                    **{type_interval: interval}
+                )
 
     @api.onchange("partner_id")
     def onchange_partner_id(self):
@@ -234,12 +248,32 @@ class SaleSubscription(models.Model):
             ._get_fiscal_position(self.partner_id)
         )
 
+    @api.onchange("salesperson_id")
+    def _onchange_salesperson_id(self):
+        """Auto-set crm_team_id based on salesperson's team"""
+        if self.salesperson_id:
+            # Get the sales team from the salesperson
+            team = self.env['crm.team'].search([
+                ('user_id', '=', self.salesperson_id.id)
+            ], limit=1)
+            if team:
+                self.crm_team_id = team.id
+            else:
+                # If no team found, try to get from user's default team
+                user_team = self.salesperson_id.sale_team_id
+                if user_team:
+                    self.crm_team_id = user_team.id
+
     def action_start_subscription(self):
         self.close_reason_id = False
         in_progress_stage = self.env["sale.subscription.stage"].search(
             [("type", "=", "in_progress")], limit=1
         )
         self.stage_id = in_progress_stage
+
+        # When starting subscription, set recurring_next_date from date_start
+        if self.date_start and self.template_id:
+            self._calculate_recurring_next_date(self.date_start)
 
     def action_close_subscription(self):
         return {
@@ -278,9 +312,12 @@ class SaleSubscription(models.Model):
 
     def _prepare_account_move(self, line_ids):
         self.ensure_one()
+        # FIX: Use date_start as invoice date
+        invoice_date = self.date_start or self.recurring_next_date or date.today()
+
         values = {
             "partner_id": self.partner_id.id,
-            "invoice_date": self.recurring_next_date,
+            "invoice_date": invoice_date,
             "invoice_payment_term_id": self.partner_id.property_payment_term_id.id,
             "invoice_origin": self.name,
             "invoice_user_id": self.user_id.id,
@@ -329,7 +366,7 @@ class SaleSubscription(models.Model):
     def generate_invoice(self):
         invoice_number = ""
         message_body = ""
-        msg_static = self.env._("Created invoice with reference")
+        msg_static = self.env._("تم إنشاء فاتورة بالمرجع")
         if self.template_id.invoicing_mode in ["draft", "invoice", "invoice_send"]:
             invoice = self.create_invoice()
             if self.template_id.invoicing_mode != "draft":
@@ -355,18 +392,23 @@ class SaleSubscription(models.Model):
             new_invoice.invoice_origin = order_id.name + ", " + self.name
             invoice_number = new_invoice.name
             message_body = (
-                "<b>%s</b> <a href=# data-oe-model=account.move data-oe-id=%d>%s</a>"
-                % (msg_static, new_invoice.id, invoice_number)
+                    "<b>%s</b> <a href=# data-oe-model=account.move data-oe-id=%d>%s</a>"
+                    % (msg_static, new_invoice.id, invoice_number)
             )
         if not invoice_number:
-            invoice_number = self.env._("To validate")
+            invoice_number = self.env._("للتحقق")
             message_body = f"<b>{msg_static}</b> {invoice_number}"
-        self.calculate_recurring_next_date(self.recurring_next_date)
+
+        # Calculate next recurring date after generating invoice
+        if self.date_start and self.template_id:
+            self._calculate_recurring_next_date(self.recurring_next_date)
         self.message_post(body=Markup(message_body))
 
     def manual_invoice(self):
         invoice_id = self.create_invoice()
-        self.calculate_recurring_next_date(self.recurring_next_date)
+        # Calculate next recurring date after manual invoice
+        if self.date_start and self.template_id:
+            self._calculate_recurring_next_date(self.recurring_next_date)
         context = dict(self.env.context)
         context["form_view_initial_mode"] = "edit"
         return {
@@ -432,30 +474,64 @@ class SaleSubscription(models.Model):
             "context": self.env.context,
         }
 
+    def _ensure_date_object(self, date_value):
+        """Helper method to ensure a value is a date object"""
+        if not date_value:
+            return None
+        if isinstance(date_value, date):
+            return date_value
+        if isinstance(date_value, datetime):
+            return date_value.date()
+        if isinstance(date_value, str):
+            try:
+                return fields.Date.to_date(date_value)
+            except Exception:
+                return None
+        return None
+
     def _check_dates(self, start, next_invoice):
-        if start and next_invoice:
-            date_start = start
-            date_next_invoice = next_invoice
-            if not isinstance(date_start, date) and not isinstance(
-                date_next_invoice, date
-            ):
-                date_start = fields.Date.to_date(start)
-                date_next_invoice = fields.Date.to_date(next_invoice)
-            if date_start > date_next_invoice:
+        """Check if start date is after next invoice date"""
+        start_date = self._ensure_date_object(start)
+        next_date = self._ensure_date_object(next_invoice)
+        if start_date and next_date:
+            if start_date > next_date:
                 return True
         return False
 
     def write(self, values):
+        # Handle date_start changes
+        if "date_start" in values:
+            date_start = values["date_start"]
+            if date_start and self.template_id:
+                # Ensure date_start is a date object
+                if isinstance(date_start, str):
+                    date_start = fields.Date.to_date(date_start)
+                if date_start:
+                    # Recalculate recurring_next_date based on new date_start
+                    type_interval = self.template_id.recurring_rule_type
+                    interval = int(self.template_id.recurring_interval)
+                    values["recurring_next_date"] = date_start + relativedelta(
+                        **{type_interval: interval}
+                    )
+                    # Also recalculate date (finish date) if limited
+                    if self.template_id.recurring_rule_boundary != "unlimited":
+                        values["date"] = date_start + relativedelta(
+                            months=+self.template_id.recurring_rule_count
+                        )
+
         res = super().write(values)
+
+        # Handle stage changes
         if "stage_id" in values:
             for record in self:
                 if record.stage_id:
                     if record.stage_id.type == "in_progress":
                         record.in_progress = True
-                        today = date.today()
                         if not record.date_start:
-                            record.date_start = today
-                        record.calculate_recurring_next_date(record.date_start)
+                            record.date_start = date.today()
+                        # Calculate recurring_next_date from date_start
+                        if record.date_start and record.template_id:
+                            record._calculate_recurring_next_date(record.date_start)
                     elif record.stage_id.type == "post":
                         record.close_reason_id = values.get("close_reason_id", False)
                         record.in_progress = False
@@ -467,21 +543,48 @@ class SaleSubscription(models.Model):
     @api.model_create_multi
     def create(self, vals_list):
         for values in vals_list:
-            if "recurring_rule_boundary" in values:
-                if not values["recurring_rule_boundary"]:
-                    template_id = self.env["sale.subscription.template"].browse(
-                        values["template_id"]
-                    )
-                    date_start = values["date_start"]
-                    if not isinstance(values["date_start"], date):
-                        date_start = fields.Date.to_date(values["date_start"])
-                    values["date"] = template_id._get_date(date_start)
+            # Set default salesperson if not provided
+            if "salesperson_id" not in values:
+                values["salesperson_id"] = self.env.user.id
+
+            # Set crm_team_id from salesperson if not provided
+            if "crm_team_id" not in values and "salesperson_id" in values:
+                salesperson = self.env['res.users'].browse(values["salesperson_id"])
+                if salesperson:
+                    team = self.env['crm.team'].search([
+                        ('user_id', '=', salesperson.id)
+                    ], limit=1)
+                    if team:
+                        values["crm_team_id"] = team.id
+                    elif salesperson.sale_team_id:
+                        values["crm_team_id"] = salesperson.sale_team_id.id
+
+            # Handle date_start and recurring_next_date
+            if "date_start" in values and "template_id" in values:
+                date_start = values["date_start"]
+                if isinstance(date_start, str):
+                    date_start = fields.Date.to_date(date_start)
+                if date_start:
+                    template = self.env["sale.subscription.template"].browse(values["template_id"])
+                    if template:
+                        type_interval = template.recurring_rule_type
+                        interval = int(template.recurring_interval)
+                        values["recurring_next_date"] = date_start + relativedelta(
+                            **{type_interval: interval}
+                        )
+                        # Calculate finish date if limited
+                        if template.recurring_rule_boundary != "unlimited":
+                            values["date"] = date_start + relativedelta(
+                                months=+template.recurring_rule_count
+                            )
+
+            # Check and adjust dates if needed
             if "date_start" in values and "recurring_next_date" in values:
-                res = self._check_dates(
-                    values["date_start"], values["recurring_next_date"]
-                )
-                if res:
+                if self._check_dates(values["date_start"], values["recurring_next_date"]):
                     values["date_start"] = values["recurring_next_date"]
+
+            # Set default stage
+            if "stage_id" not in values:
                 values["stage_id"] = (
                     self.env["sale.subscription.stage"]
                     .search([("type", "=", "draft")], order="sequence desc", limit=1)

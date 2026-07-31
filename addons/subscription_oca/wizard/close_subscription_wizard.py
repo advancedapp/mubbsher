@@ -5,10 +5,10 @@ from odoo import fields, models
 
 class CloseSubscriptionWizard(models.TransientModel):
     _name = "close.reason.wizard"
-    _description = "Close reason wizard"
+    _description = "معالج سبب الإغلاق"
 
     close_reason_id = fields.Many2one(
-        comodel_name="sale.subscription.close.reason", string="Reason"
+        comodel_name="sale.subscription.close.reason", string="السبب"
     )
 
     def button_confirm(self):

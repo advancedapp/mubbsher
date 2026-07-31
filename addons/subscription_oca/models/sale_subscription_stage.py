@@ -6,22 +6,23 @@ from odoo.exceptions import ValidationError
 
 class SaleSubscriptionStage(models.Model):
     _name = "sale.subscription.stage"
-    _description = "Subscription stage"
+    _description = "مرحلة الاشتراك"
     _order = "sequence, name, id"
 
-    name = fields.Char(required=True, translate=True)
-    sequence = fields.Integer()
-    in_progress = fields.Boolean(string="In progress", default=False)
-    fold = fields.Boolean(string="Kanban folded")
-    description = fields.Text(translate=True)
+    name = fields.Char(required=True, translate=True, string="الاسم")
+    sequence = fields.Integer(string="التسلسل")
+    in_progress = fields.Boolean(string="قيد التنفيذ", default=False)
+    fold = fields.Boolean(string="مطوي في كانبان")
+    description = fields.Text(translate=True, string="الوصف")
     type = fields.Selection(
         [
-            ("draft", "Draft"),
-            ("pre", "Ready to start"),
-            ("in_progress", "In progress"),
-            ("post", "Closed"),
+            ("draft", "مسودة"),
+            ("pre", "جاهز للبدء"),
+            ("in_progress", "قيد التنفيذ"),
+            ("post", "مغلق"),
         ],
         default="pre",
+        string="النوع",
     )
 
     @api.constrains("type")
@@ -31,5 +32,5 @@ class SaleSubscriptionStage(models.Model):
         )
         if len(post_stages) > 1:
             raise ValidationError(
-                self.env._("There is already a Closed-type stage declared")
+                self.env._("يوجد بالفعل مرحلة من نوع 'مغلق' محددة")
             )

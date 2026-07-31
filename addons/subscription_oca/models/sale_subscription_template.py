@@ -7,58 +7,58 @@ from odoo import api, fields, models
 
 class SaleSubscriptionTemplate(models.Model):
     _name = "sale.subscription.template"
-    _description = "Subscription templates"
+    _description = "قوالب الاشتراك"
 
-    name = fields.Char(required=True)
-    description = fields.Text(string="Terms and conditions")
-    recurring_interval = fields.Integer(string="Repeat every", default=1)
+    name = fields.Char(required=True, translate=True, string="الاسم")
+    description = fields.Text(string="الشروط والأحكام", translate=True)
+    recurring_interval = fields.Integer(string="كرر كل", default=1)
     recurring_rule_type = fields.Selection(
         [
-            ("days", "Day(s)"),
-            ("weeks", "Week(s)"),
-            ("months", "Month(s)"),
-            ("years", "Year(s)"),
+            ("days", "يوم (أيام)"),
+            ("weeks", "أسبوع (أسابيع)"),
+            ("months", "شهر (أشهر)"),
+            ("years", "سنة (سنوات)"),
         ],
-        string="Recurrence",
+        string="التكرار",
         default="months",
     )
     recurring_rule_boundary = fields.Selection(
-        [("unlimited", "Forever"), ("limited", "Fixed")],
-        string="Duration",
+        [("unlimited", "إلى الأبد"), ("limited", "ثابت")],
+        string="المدة",
         default="unlimited",
     )
     invoicing_mode = fields.Selection(
         default="draft",
-        string="Invoicing mode",
+        string="طريقة الفوترة",
         selection=[
-            ("draft", "Draft"),
-            ("invoice", "Invoice"),
-            ("invoice_send", "Invoice & send"),
-            ("sale_and_invoice", "Sale order & Invoice"),
+            ("draft", "مسودة"),
+            ("invoice", "فاتورة"),
+            ("invoice_send", "فاتورة وإرسال"),
+            ("sale_and_invoice", "أمر بيع وفاتورة"),
         ],
     )
-    code = fields.Char()
-    recurring_rule_count = fields.Integer(default=1, string="Rule count")
+    code = fields.Char(string="الكود")
+    recurring_rule_count = fields.Integer(default=1, string="عدد القواعد")
     invoice_mail_template_id = fields.Many2one(
         comodel_name="mail.template",
-        string="Invoice Email",
+        string="البريد الإلكتروني للفاتورة",
         domain="[('model', '=', 'account.move')]",
     )
     product_ids = fields.One2many(
         comodel_name="product.template",
         inverse_name="subscription_template_id",
-        string="Products",
+        string="المنتجات",
     )
     product_ids_count = fields.Integer(
-        compute="_compute_product_ids_count", string="product_ids"
+        compute="_compute_product_ids_count", string="المنتجات"
     )
     subscription_ids = fields.One2many(
         comodel_name="sale.subscription",
         inverse_name="template_id",
-        string="Subscriptions",
+        string="الاشتراكات",
     )
     subscription_count = fields.Integer(
-        compute="_compute_subscription_count", string="subscription_ids"
+        compute="_compute_subscription_count", string="الاشتراكات"
     )
 
     def _compute_subscription_count(self):

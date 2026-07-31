@@ -47,12 +47,12 @@
     </record>
 
     <record id="subscription_stage_action" model="ir.actions.act_window">
-        <field name="name">Susbcription stages</field>
+        <field name="name">مراحل الاشتراك</field>
         <field name="res_model">sale.subscription.stage</field>
         <field name="view_mode">list,form</field>
         <field name="help" type="html">
             <p class="oe_view_nocontent_create">
-                Click to create a new subscription stage.
+                انقر لإنشاء مرحلة اشتراك جديدة.
             </p>
         </field>
     </record>
@@ -62,6 +62,6 @@
         parent="sale_subscription_configuration_menu"
         action="subscription_stage_action"
         sequence="20"
-        name="Subscription stages"
+        name="مراحل الاشتراك"
     />
 </odoo>

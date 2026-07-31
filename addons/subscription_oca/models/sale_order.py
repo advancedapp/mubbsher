@@ -14,11 +14,11 @@ class SaleOrder(models.Model):
     subscription_ids = fields.One2many(
         comodel_name="sale.subscription",
         inverse_name="sale_order_id",
-        string="Subscriptions",
+        string="الاشتراكات",
     )
-    subscriptions_count = fields.Integer(compute="_compute_subscriptions_count")
+    subscriptions_count = fields.Integer(compute="_compute_subscriptions_count", string="عدد الاشتراكات")
     order_subscription_id = fields.Many2one(
-        comodel_name="sale.subscription", string="Subscription"
+        comodel_name="sale.subscription", string="الاشتراك"
     )
 
     @api.depends("subscription_ids")
