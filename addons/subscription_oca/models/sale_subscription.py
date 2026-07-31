@@ -65,7 +65,7 @@ class SaleSubscription(models.Model):
         string="الوكيل التجاري",
         default=lambda self: self.env.user.id,
     )
-    # NEW FIELD: المندوب (Salesperson)
+    # NEW FIELD: المندوب (Salesperson) - auto-filled from partner's user_id
     salesperson_id = fields.Many2one(
         comodel_name="res.users",
         string="المندوب",
@@ -239,6 +239,11 @@ class SaleSubscription(models.Model):
     @api.onchange("partner_id")
     def onchange_partner_id(self):
         self.pricelist_id = self.partner_id.property_product_pricelist
+        # Auto-fill salesperson from partner's user_id
+        if self.partner_id and self.partner_id.user_id:
+            self.salesperson_id = self.partner_id.user_id.id
+            # Also auto-set crm_team_id based on the salesperson
+            self._onchange_salesperson_id()
 
     @api.onchange("partner_id", "company_id")
     def onchange_partner_id_fpos(self):
@@ -543,9 +548,13 @@ class SaleSubscription(models.Model):
     @api.model_create_multi
     def create(self, vals_list):
         for values in vals_list:
-            # Set default salesperson if not provided
-            if "salesperson_id" not in values:
-                values["salesperson_id"] = self.env.user.id
+            # Auto-set salesperson from partner's user_id if not provided
+            if "salesperson_id" not in values and "partner_id" in values:
+                partner = self.env['res.partner'].browse(values["partner_id"])
+                if partner and partner.user_id:
+                    values["salesperson_id"] = partner.user_id.id
+                else:
+                    values["salesperson_id"] = self.env.user.id
 
             # Set crm_team_id from salesperson if not provided
             if "crm_team_id" not in values and "salesperson_id" in values:

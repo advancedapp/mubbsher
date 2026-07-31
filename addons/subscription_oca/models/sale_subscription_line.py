@@ -100,15 +100,36 @@ class SaleSubscriptionLine(models.Model):
     def _compute_tax_ids(self):
         for line in self:
             fpos = (
-                line.sale_subscription_id.fiscal_position_id
-                or line.sale_subscription_id.fiscal_position_id._get_fiscal_position(
-                    line.sale_subscription_id.partner_id
-                )
+                    line.sale_subscription_id.fiscal_position_id
+                    or line.sale_subscription_id.fiscal_position_id._get_fiscal_position(
+                line.sale_subscription_id.partner_id
+            )
             )
             # If company_id is set, always filter taxes by the company
             taxes = line.product_id.taxes_id.filtered(
                 lambda t: t.company_id == self.env.company
             )
+
+            # If no taxes found on product, try to get Saudi default taxes
+            if not taxes:
+                # Search for Saudi VAT tax (15%)
+                saudi_tax = self.env['account.tax'].search([
+                    ('company_id', '=', self.env.company.id),
+                    ('type_tax_use', '=', 'sale'),
+                    ('amount', '=', 15.0),
+                    ('amount_type', '=', 'percent'),
+                ], limit=1)
+
+                # If 15% VAT not found, try to get any sale tax
+                if not saudi_tax:
+                    saudi_tax = self.env['account.tax'].search([
+                        ('company_id', '=', self.env.company.id),
+                        ('type_tax_use', '=', 'sale'),
+                    ], limit=1)
+
+                if saudi_tax:
+                    taxes = saudi_tax
+
             line.tax_ids = fpos.map_tax(taxes)
 
     @api.depends(
@@ -121,8 +142,8 @@ class SaleSubscriptionLine(models.Model):
             if not record.product_id:
                 continue
             if (
-                record.sale_subscription_id.pricelist_id
-                and record.sale_subscription_id.partner_id
+                    record.sale_subscription_id.pricelist_id
+                    and record.sale_subscription_id.partner_id
             ):
                 product = record.product_id.with_context(
                     partner=record.sale_subscription_id.partner_id,
@@ -152,11 +173,11 @@ class SaleSubscriptionLine(models.Model):
     def _compute_discount(self):
         for record in self:
             if not (
-                record.product_id
-                and record.product_id.uom_id
-                and record.sale_subscription_id.partner_id
-                and record.sale_subscription_id.pricelist_id
-                and self.env.user.has_group("sale.group_discount_per_so_line")
+                    record.product_id
+                    and record.product_id.uom_id
+                    and record.sale_subscription_id.partner_id
+                    and record.sale_subscription_id.pricelist_id
+                    and self.env.user.has_group("sale.group_discount_per_so_line")
             ):
                 record.discount = 0.0
                 continue
@@ -170,7 +191,7 @@ class SaleSubscriptionLine(models.Model):
                 pricelist=record.sale_subscription_id.pricelist_id.id,
                 uom=record.product_id.uom_id.id,
                 fiscal_position=record.sale_subscription_id.fiscal_position_id
-                or self.env.context.get("fiscal_position"),
+                                or self.env.context.get("fiscal_position"),
             )
 
             price, rule_id = record.sale_subscription_id.pricelist_id.with_context(
@@ -199,7 +220,7 @@ class SaleSubscriptionLine(models.Model):
                     )
                 discount = (new_list_price - price) / new_list_price * 100
                 if (discount > 0 and new_list_price > 0) or (
-                    discount < 0 and new_list_price < 0
+                        discount < 0 and new_list_price < 0
                 ):
                     record.discount = discount
 
@@ -212,9 +233,9 @@ class SaleSubscriptionLine(models.Model):
             pricelist_item = PricelistItem.browse(rule_id)
             if pricelist_item.compute_price == "fixed":
                 while (
-                    pricelist_item.base == "pricelist"
-                    and pricelist_item.base_pricelist_id
-                    and pricelist_item.compute_price == "fixed"
+                        pricelist_item.base == "pricelist"
+                        and pricelist_item.base_pricelist_id
+                        and pricelist_item.compute_price == "fixed"
                 ):
                     _price, rule_id = (
                         pricelist_item.base_pricelist_id._get_product_price_rule(
@@ -227,7 +248,7 @@ class SaleSubscriptionLine(models.Model):
                 product_price = product.standard_price
                 product_currency = product.cost_currency_id
             elif (
-                pricelist_item.base == "pricelist" and pricelist_item.base_pricelist_id
+                    pricelist_item.base == "pricelist" and pricelist_item.base_pricelist_id
             ):
                 product_price = pricelist_item.base_pricelist_id._get_product_price(
                     product, self.product_uom_qty or 1.0, uom=self.product_id.uom_id
@@ -303,8 +324,8 @@ class SaleSubscriptionLine(models.Model):
     def _prepare_account_move_line(self):
         self.ensure_one()
         account = (
-            self.product_id.property_account_income_id
-            or self.product_id.categ_id.property_account_income_categ_id
+                self.product_id.property_account_income_id
+                or self.product_id.categ_id.property_account_income_categ_id
         )
         return {
             "product_id": self.product_id.id,
