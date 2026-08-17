@@ -1,0 +1,47 @@
+<odoo>
+    <record id="view_partner_form_required_fields" model="ir.ui.view">
+        <field name="name">res.partner.form.required.company.fields</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+
+            <!-- Address fields inside o_address_format -->
+            <xpath expr="//div[hasclass('o_address_format')]/field[@name='street']" position="attributes">
+                <attribute name="required">company_type == 'company'</attribute>
+            </xpath>
+            <xpath expr="//div[hasclass('o_address_format')]/field[@name='city']" position="attributes">
+                <attribute name="required">company_type == 'company'</attribute>
+            </xpath>
+            <xpath expr="//div[hasclass('o_address_format')]/field[@name='state_id']" position="attributes">
+                <attribute name="required">company_type == 'company'</attribute>
+            </xpath>
+            <xpath expr="//div[hasclass('o_address_format')]/field[@name='zip']" position="attributes">
+                <attribute name="required">company_type == 'company'</attribute>
+            </xpath>
+
+            <!-- country_id is nested inside its own div, not a direct child of o_address_format -->
+            <xpath expr="//div[@name='partner_address_country']/field[@name='country_id']" position="attributes">
+                <attribute name="required">company_type == 'company'</attribute>
+            </xpath>
+
+            <!-- VAT -->
+            <field name="vat" position="attributes">
+                <attribute name="required">company_type == 'company'</attribute>
+            </field>
+
+            <!-- Phone / Mobile (already working) -->
+            <field name="phone" position="attributes">
+                <attribute name="required">company_type == 'company'</attribute>
+            </field>
+            <field name="mobile" position="attributes">
+                <attribute name="required">company_type == 'company'</attribute>
+            </field>
+
+            <!-- Saudi additional identification scheme (l10n_sa) -->
+            <field name="l10n_sa_additional_identification_scheme" position="attributes">
+                <attribute name="required">company_type == 'company'</attribute>
+            </field>
+
+        </field>
+    </record>
+</odoo>

@@ -72,9 +72,9 @@ class SaleSubscription(models.Model):
         default=lambda self: self.env.user.id,
         tracking=True,
     )
-    date_start = fields.Date(string="تاريخ البدء", default=date.today())
+    date_start = fields.Date(string="تاريخ بداية العقد", default=date.today())
     date = fields.Date(
-        string="تاريخ الانتهاء",
+        string="تاريخ نهاية العقد",
         compute="_compute_rule_boundary",
         store=True,
         readonly=False,
